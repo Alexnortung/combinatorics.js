@@ -1,5 +1,6 @@
 class UniqueString {
   constructor(str) {
+    this.duplicatesArray = [];
     this._str = str;
     this.str = str;
 
@@ -30,26 +31,31 @@ class UniqueString {
 
   _setUniques() {
     let arr = this._str.split("");
-    this._uniques = arr.filter(item, index => arr.indexOf(item) == index).join("");
+    this._uniques = arr.filter((item, index) => arr.indexOf(item) == index).join("");
   }
 
   _setDuplicates() {
     let arr = this._str.split("");
+    this.duplicatesArray = [];
+
 
     const obj = {};
 
     for (var i = arr.length - 1; i >= 0; i--) {
-      if (!obj.hasOwnproperty(arr[i])) {
-        obj[arr[i]] = 1;
+      if (!obj.hasOwnProperty(arr[i])) {
+        obj[arr[i]] = 0;
       } else {
+        this.duplicatesArray.push(arr[i]);
         obj[arr[i]] += 1;
       }
 
     }
-    
+
     this._duplicates = obj;
     // this._duplicates = arr.filter(item, index => arr.indexOf(item) != index);
   }
+
+
 
 
 
@@ -58,3 +64,5 @@ class UniqueString {
   }
 
 }
+
+module.exports = UniqueString;
