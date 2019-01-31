@@ -1,16 +1,5 @@
 import {UniqueString} from "./unique-string.js";
-import {orderer} from "./orderer";
-
-
-function findDuplicates(string) {
-  let arr = string.split("");
-  return arr.filter(item, index => arr.indexOf(item) != index);
-}
-
-function findUniques(string) {
-  let arr = string.split("");
-  return arr.filter(item, index => arr.indexOf(item) == index);
-}
+import {orderer} from "./orderer.js";
 
 function* uniqueOrderer(inputString) {
   //find duplicates

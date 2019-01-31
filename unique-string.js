@@ -46,6 +46,7 @@ class UniqueString {
       }
 
     }
+    
     this._duplicates = obj;
     // this._duplicates = arr.filter(item, index => arr.indexOf(item) != index);
   }

@@ -56,6 +56,8 @@ class Subgroup {
     return this;
   }
 
+
+
   generateUnique() {
     const that = this;
 
@@ -80,8 +82,10 @@ class Subgroup {
             yield false;
           }
 
+        } else {
+          yield false;
+
         }
-        yield false;
 
         acceptingSubgroups[i].clearItem(cLetter);
 
@@ -136,6 +140,22 @@ class Subgroup {
         //angery
       } else {
         //double angery
+        //pass subgroups and remaining letters to a deepAssigner
+        const remainingLetters = [];
+        for (var char in duplicates) {
+          if (duplicates.hasOwnProperty(char)) {
+            remainingLetters.push(char);
+          }
+        }
+        const da = deepAssigner(subgroups, remainingLetters);
+
+        let daFinished = false;
+        while (!daFinished) {
+
+        }
+
+
+
       }
 
 
