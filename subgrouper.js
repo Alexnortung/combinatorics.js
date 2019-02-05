@@ -4,7 +4,10 @@ const orderer = require("./orderer.js");
 class Subgroup {
   constructor(parent, acceptedLetters, letterArray ) {
     this.assignerCreated = false;
-    this.assignerObj = {};
+    this.assignerObj = null;
+		this.initialAssigned = false;
+		this.assignerObjRes = null;
+		this.ordererCreated = false;
 
     this.parent = parent;
     this.acceptedLetters = acceptedLetters;
@@ -19,6 +22,14 @@ class Subgroup {
 
   }
 
+	resetKeepLetters() {
+		this.assignerCreated = false;
+		// this.assignerObj = null;
+		this.initialAssigned = false;
+		this.ordererCreated = false;
+		// this.initialAssign();
+	}
+
   getLayer() {
     if (this.parent == null) {
       return 1;
@@ -27,9 +38,47 @@ class Subgroup {
     }
   }
 
+	initialCreateOrderer() {
+		if (!this.ordererCreated) {
+			this.orderer = orderer(this.str.unique);
+			this.nextOrder();
+			this.ordererCreated = true;
+		}
+	}
+
+	initialCreateAssigner() {
+		if (!this.assignerCreated) {
+			// this.resetOrderer();
+			this.initialCreateOrderer();
+			this.assignerObj = this.assigner();
+			this.assignerCreated = true;
+			this.initialAssigned = false;
+		}
+	}
+
+	initialAssign() {
+		if (!this.initialAssigned) {
+			// this.resetOrderer();
+			this.initialCreateOrderer();
+			this.initialCreateAssigner();
+			this.assignerObj.next();
+			this.initialAssigned = true;
+			this.subgroups.forEach((sub) => sub.initialAssign());
+		}
+	}
+
   resetAssigner() {
-    this.assignerObj = this.assigner();
+		this.assignerCreated = false;
+		this.initialAssigned = false;
+    // this.initialCreateAssigner();
+		this.initialAssign();
   }
+
+	resetOrderer() {
+		this.orderer = orderer(this.str.unique);
+		this.nextOrder();
+
+	}
 
   assigner() {
     const sub = this;
@@ -70,7 +119,7 @@ class Subgroup {
             const acceptingSubgroups = sub.subgroups.filter(sub => sub.accepts(cLetter));
 
             acceptingNum[cLetter] = acceptingSubgroups.length;
-            console.log(cLetter, "accepts:", acceptingNum[cLetter], indexes, `layer: ${sub.getLayer()}`);
+            // console.log(cLetter, "accepts:", acceptingNum[cLetter], indexes, `layer: ${sub.getLayer()}`);
 
             for (var i = 0; i < indexes[cLetter].length; i++) {
               // console.log(acceptingSubgroups ,acceptingNum[cLetter], indexes[cLetter][i], cLetter, indexes);
@@ -102,7 +151,7 @@ class Subgroup {
 
             if (cLastIndex != cIndex) {
               // console.log("cLastIndex:", cLastIndex, cIndex, cLetter);
-              console.log(acceptingNum, indexes);
+              // console.log(acceptingNum, indexes);
               cIndexes[j] += 1;
               for (var k = sub.uniqueOrder.indexOf(cLetter) + 1; k < sub.uniqueOrder.length; k++) {
                 indexes[sub.uniqueOrder[k]].forEach((indie, m) => indexes[sub.uniqueOrder[k]][m] = 0);
@@ -139,36 +188,127 @@ class Subgroup {
   }
 
   next() {
+	  //initial assign this and all subgroups
+	  // if !this.isempty
+	  	//forrev i = this.subgroups -1
+		  // call sub.next
+		  // if done
+		  	//for j = i this.subs
+			  //if j == 0 ret done: true
+				//assigner.next
+			  //sub.resetAssigner
+			//break
+		  //else
+		  	//continue?
+
+	  //else ret done:true
+
+
+		if (this.isEmpty()) {
+			return {done: true};
+		}
+
+
+		const that = this;
+
+		if (!this.initialAssigned) {
+			this.initialAssign();
+			// return {
+			//   done: false,
+			//   value: that.toArray()
+			// };
+
+		}
+
+
+
+		for (let i = this.subgroups.length - 1; i >= 0; i--){
+			const cSub = this.subgroups[i];
+			const subRes = cSub.next();
+			// console.log("subRes",subRes, this.getLayer());
+
+			if (subRes.done && i == 0) {
+				if (this.parent == null) {
+					console.log("next");
+
+				}
+
+				const assignerRes = this.assignerObj.next();
+				console.log(assignerRes);
+				if (assignerRes.value == true) {
+					const ordererRes = this.nextOrder();
+					if (ordererRes.done) {
+						return {done: true};
+					} else {
+						//nothing?
+						this.resetAssigner();
+						const assignerRes = this.assignerObj.next();
+						console.log(assignerRes);
+
+					}
+
+				}
+
+
+			}
+
+			if (!subRes.done || subRes.value == false) {
+
+				for (var j = i; j < this.subgroups.length; j++) {
+					const cSub2 = this.subgroups[j];
+					cSub2.resetKeepLetters();
+				}
+				break;
+
+			}
+
+
+
+		}
+
+		if (this.parent == null) {
+			console.log(this.uniqueOrder);
+		}
+
+		return {
+		  done: false,
+		  value: that.toArray()
+		};
+
+
+
+
+
+
     // assign letters to subgroups
     // call this.subgroups next methods
     // get this.toArray
-    const that = this;
-
-    if (!this.assignerCreated) {
-      this.resetAssigner();
-    }
-
-    // console.log(this.isEmpty());
-    if (!this.isEmpty()) {
-      const assignerRes = this.assignerObj.next();
-
-      // if (assignerRes) {
-      //   this.nextOrder()
-      // }
-
-      for (var i = 0; i < this.subgroups.length; i++) {
-        // this.subgroups[i].next();
-      }
-
-    } else {
-      return { done: true };
-    }
-
-
-    return {
-      done: false,
-      value: that.toArray()
-    };
+		//
+    // if (!this.assignerCreated) {
+    //   this.resetAssigner();
+    // }
+		//
+    // // console.log(this.isEmpty());
+    // if (!this.isEmpty()) {
+    //   const assignerRes = this.assignerObj.next();
+		//
+    //   // if (assignerRes) {
+    //   //   this.nextOrder()
+    //   // }
+		//
+    //   for (var i = 0; i < this.subgroups.length; i++) {
+    //     // this.subgroups[i].next();
+    //   }
+		//
+    // } else {
+    //   return { done: true };
+    // }
+		//
+		//
+    // return {
+    //   done: false,
+    //   value: that.toArray()
+    // };
 
     //returns unique letters + other subgroups.toArray
 
@@ -198,12 +338,19 @@ class Subgroup {
 
   nextOrder() {
     this.uniqueOrder = [];
-    let ordererRes = this.orderer.next().value;
-    // console.log(ordererRes);
-    for (let letter of ordererRes) {
+    let ordererRes = this.orderer.next();
+
+		if (ordererRes.done) {
+			return {done: true};
+		}
+
+		const ordererResStr = ordererRes.value;
+		// console.log(ordererResStr, this.letterArray, this.orderer, ordererRes.done);
+    for (let letter of ordererResStr) {
       this.uniqueOrder.push(letter);
     }
     this.generateSubgroups();
+		return ordererRes;
   }
 
   generateSubgroups() {
@@ -215,7 +362,7 @@ class Subgroup {
       remainingLetters.splice(remainingLetters.length -1 ,1);
     }
     if (this.parent == null) {
-      console.log(this.subgroups[0]);
+      // console.log(this.subgroups[0]);
 
     }
   }

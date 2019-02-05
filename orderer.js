@@ -27,6 +27,8 @@ function* orderer(inputString) {
 
   }
 
+	// console.log("orderer finished");
 }
+
 
 module.exports = orderer;

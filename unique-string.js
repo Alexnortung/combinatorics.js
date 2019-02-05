@@ -14,6 +14,20 @@ class UniqueString {
     return this._duplicates;
   }
 
+	getDuplicatesAsArray() {
+		const arr = [];
+
+		for (var letter in this._duplicates) {
+			if (this._duplicates.hasOwnProperty(letter)) {
+				for (var i = 0; i < this._duplicates[letter]; i++) {
+					arr.push(letter);
+				}
+			}
+		}
+
+		return arr;
+	}
+
   get str() {
     return this._str;
   }
