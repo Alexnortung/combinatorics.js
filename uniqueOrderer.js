@@ -14,7 +14,11 @@ function* uniqueOrderer(inputString) {
     // console.log(s.subgroups[0].letterArray);
     // console.log(s.subgroups[1].letterArray);
     // console.log(s.subgroups[2].letterArray);
-    yield res;
+		if (res.done) {
+			isFinished = true;
+			break;
+		}
+    yield res.value;
   }
 
 }

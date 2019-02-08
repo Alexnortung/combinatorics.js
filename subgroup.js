@@ -83,6 +83,8 @@ class Subgroup {
 				// .split is temporary
 				this.uniqueOrder = ordererRes.value.split("");
 
+				this.createIndexes();
+
 				this.createSubgroups();
 
 				// console.log(this.indexes);
@@ -203,6 +205,22 @@ class Subgroup {
 
 		//create Items.
 
+		this.createIndexes();
+
+
+		this.createSubgroups();
+
+
+
+		return {
+			done: false,
+			value: this.currentValue
+		};
+	}
+
+	createIndexes() {
+		this.indexes = [];
+
 		const duplicates = this.uItems.duplicates;
 		for (let i = 0; i < duplicates.length; i++) {
 			const cDupe = duplicates[i];
@@ -215,16 +233,6 @@ class Subgroup {
 			});
 			this.items.push(cItem);
 		}
-
-
-		this.createSubgroups();
-
-
-
-		return {
-			done: false,
-			value: this.currentValue
-		};
 	}
 
 	isEmpty() {
