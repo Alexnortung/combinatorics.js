@@ -1,6 +1,8 @@
 const uniqueOrderer = require('./uniqueOrderer.js');
 
-const u = uniqueOrderer("abccc");
+const u = uniqueOrderer("001122");
+
+// const uniques = [];
 
 let isFinished = false;
 while (!isFinished) {
@@ -9,7 +11,13 @@ while (!isFinished) {
 		isFinished = true;
 		break;
 	}
-	console.log(res.value);
+	const val = res.value.join("")
+	console.log(val);
+	// if (uniques.indexOf(val) !== -1) {
+	// 	console.log(val, "already exists");
+	// } else {
+	// 	uniques.push(val);
+	// }
 }
 
 // for (cmb of u) {

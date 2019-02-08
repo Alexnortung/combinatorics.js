@@ -73,10 +73,10 @@ class Subgroup {
 			if (assignementResponse) {
 				//if all assignments has been made, goto next order.
 				const ordererRes = this.orderer.next();
-				if (this.topLayer) {
-					console.log("next order");
-
-				}
+				// if (this.topLayer) {
+				// 	console.log("next order");
+				//
+				// }
 				if (ordererRes.done) {
 					return {done: true};
 				}
