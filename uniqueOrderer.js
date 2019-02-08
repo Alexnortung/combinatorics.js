@@ -1,10 +1,10 @@
-const Subgroup = require('./subgrouper.js');
+const Subgroup = require('./subgroup.js');
 
 function* uniqueOrderer(inputString) {
 
   let arr = Array.from(inputString);
 
-  const s = new Subgroup(null, arr, arr);
+  const s = new Subgroup(arr, arr);
   // console.log(s);
 
   let isFinished = false;

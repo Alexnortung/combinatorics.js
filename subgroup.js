@@ -1,14 +1,33 @@
 const UniqueString = require('./unique-string.js');
+const UniqueItems = require('./Unique-items.js');
 const orderer = require("./orderer.js");
 const Item = require('./item.js');
 
+
 class Subgroup {
-	constructor(itemsArray, acceptedLetters) {
+	constructor(itemsArray, acceptedItems) {
 
 		this.itemsArray = itemsArray || [];
-		this.acceptedLetters = acceptedLetters || [];
+		this.acceptedItems = acceptedItems || [];
+
+		// this._currentValue = [];
 
 		this.firstIteration = true;
+	}
+
+	get currentValue() {
+		if (this.isEmpty() || this.firstIteration) {
+			return [];
+		}
+
+		const returnArr = [];
+
+		for (var i = 0; i < this.uniqueOrder.length; i++) {
+			returnArr.push(this.uniqueOrder[i], ...this.subgroups[i].currentValue)
+		}
+
+		return returnArr;
+
 	}
 
 	setItemsArray(array) {
@@ -26,66 +45,139 @@ class Subgroup {
 		}
 
 		if (this.firstIteration) {
-			this.firstIteration = false;
-			this.indexes = {};
-			this.str = new UniqueString(this.items);
-			this.orderer = orderer(this.str.uniques);
-			this.uniqueOrder = this.orderer.next().value;
-			this.acceptingSubgroupsObj = {};
-			this.subgroups = [];
-			this.items = [];
+			return this.firstIterationMethod();
+		}
 
 
-			const remainingLetters = this.uniqueOrder;
-			for (let i = 0; i < this.uniqueOrder.length; i++) {
-				this.subgroups[i] = new Subgroup(undefined, remainingLetters.slice());
+		let allSubgroupsDone = true;
 
-				remainingLetters.splice(0,1);
+		for (let i = this.subgroups.length - 1; i >= 0; i--){
+			const subgroupRes = this.subgroups[i].next();
+			if (subgroupRes.done == false) {
+				allSubgroupsDone = false;
+				return {
+					done: false,
+					value: this.currentValue
+				};
+
 
 			}
+		}
 
-			const duplicatesArray = this.str.getDuplicatesAsArray();
+		if (allSubgroupsDone) {
+			//next order
+			// return this.currentValue
 
-			for (let i = 0; i < duplicatesArray.length; i++) {
-				const cValue = duplicatesArray[i];
-				const cItem = new Item(cValue);
-				cItem.setAcceptingSubgroups(this.subgroups);
-				this.items.push(cItem);
-				cItem.acceptingSubgroups[0].assignItem(cItem);
-
+			const ordererRes = this.orderer.next();
+			if (ordererRes.done) {
+				return {done: true};
 			}
+			// .split is temporary
+			this.uniqueOrder = ordererRes.value.split("");
 
-			const returnedValues = [];
-			const returnArray = [];
+			this.createSubgroups();
 
-			for (let i = 0; i < this.subgroups.length; i++) {
-				//initial iteration
-				returnArray.push(this.uniqueOrder[i]);
-				returnedValues[i] = this.subgroups[i].next();
-				returnArray.push(returnedValues[i]);
-			}
-
-			
+			console.log(this.indexes);
 
 			return {
 				done: false,
-				value: returnArray
+				value: this.currentValue
 			};
-
-
-
-
-
-			// return {
-			// 	done: false,
-			// 	value: this.toArray();
-			// };
 		}
+
+
+
+		return {done: true};
+
 
 	}
 
+	nextAssignment() {
+		
+	}
+
+	createSubgroups() {
+		const remainingItems = this.uniqueOrder.slice();
+
+		for (let i = this.uniqueOrder.length - 1; i >= 0; i--){
+		 this.subgroups[i] = new Subgroup(undefined, remainingItems.slice());
+
+		 remainingItems.splice(remainingItems.length - 1,1);
+		}
+
+		const duplicates = this.uItems.duplicates;
+		for (let i = 0; i < duplicates.length; i++) {
+			const cDupe = duplicates[i];
+			const cValue = cDupe.value;
+			const cItem = new Item(cValue);
+			cItem.setAcceptingSubgroups(this.subgroups);
+			for (let j = 0; j < cDupe.dupes; j++) {
+				this.items.push(cItem);
+				cItem.acceptingSubgroups[0].assignItem(cValue);
+			}
+		}
+
+		this.subgroups.forEach(sub => sub.next());
+	}
+
+	firstIterationMethod() {
+		this.firstIteration = false;
+		this.indexes = [];
+		this.uItems = new UniqueItems(this.itemsArray);
+		// .join and .split is temporary
+		const orderString = this.uItems.uniques.join("");
+		// console.log(orderString);
+		this.orderer = orderer(orderString);
+		this.uniqueOrder = this.orderer.next().value;
+		// console.log(this.uniqueOrder);
+		this.uniqueOrder = this.uniqueOrder.split("");
+		// console.log("uorder: ", this.uniqueOrder);
+		this.acceptingSubgroupsObj = {};
+		this.subgroups = [];
+		this.items = [];
+
+
+		this.createSubgroups();
+
+
+
+		// const duplicatesArray = this.str.getDuplicatesAsArray();
+		//
+		// for (let i = 0; i < duplicatesArray.length; i++) {
+		// 	const cValue = duplicatesArray[i];
+		// 	const cItem = new Item(cValue);
+		// 	cItem.setAcceptingSubgroups(this.subgroups);
+		// 	this.items.push(cItem);
+		// 	cItem.acceptingSubgroups[0].assignItem(cItem);
+		//
+		// }
+
+		// const returnedValues = [];
+		// const returnArray = [];
+		//
+		// // console.log("subs:", this.subgroups);
+		//
+		// for (let i = 0; i < this.subgroups.length; i++) {
+		// 	//initial iteration
+		// 	returnArray.push(this.uniqueOrder[i]);
+		// 	returnedValues[i] = this.subgroups[i].next();
+		// 	if (returnedValues[i].value) {
+		// 		returnArray.push(returnedValues[i].value);
+		//
+		// 	}
+		// }
+		// console.log(this.uniqueOrder);
+		// console.log(returnArray, returnedValues);
+
+
+		return {
+			done: false,
+			value: this.currentValue
+		};
+	}
+
 	isEmpty() {
-		if (this.letterArray.length == 0) {
+		if (this.itemsArray.length == 0) {
 			return true;
 		}
 		return false;
@@ -101,7 +193,7 @@ class Subgroup {
 	}
 
 	isAccepted( letter ) {
-		if (this.acceptedLetters.includes(letter)) {
+		if (this.acceptedItems.includes(letter)) {
 			return this;
 		}
 		return false;
@@ -111,12 +203,21 @@ class Subgroup {
 		return this.isAccepted(letter);
 	}
 
-	assignItem(itemValue) {
-		if (!this.itemsArray.includes(itemValue)) {
-			this.itemsArray.push(itemValue)
+	assignItem(...itemValues) {
+		if (!this.firstIteration) {
+			throw new Error("Cannot assign items after first iteration");
+		}
 
+		for (var i = 0; i < itemValues.length; i++) {
+			const itemValue = itemValues[i];
+			// if (!this.itemsArray.includes(itemValue)) {
+				this.itemsArray.push(itemValue)
+
+			// }
 		}
 	}
 
 
 }
+
+module.exports = Subgroup;

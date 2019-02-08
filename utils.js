@@ -6,5 +6,16 @@ module.exports = {
       x *= i;
     }
     return x;
-  }
+  },
+
+	indexOfObjectValue: function (array, prop, value) {
+		for (var i = 0; i < array.length; i++) {
+			const cObj = array[i];
+			if (cObj.hasOwnProperty(prop) && cObj[prop] === value) {
+				return i;
+			}
+		}
+		// no result
+		return -1;
+	}
 }
