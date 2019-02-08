@@ -5,6 +5,7 @@ function* uniqueOrderer(inputString) {
   let arr = Array.from(inputString);
 
   const s = new Subgroup(arr, arr);
+	s.topLayer = true;
   // console.log(s);
 
   let isFinished = false;

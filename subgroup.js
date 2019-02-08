@@ -65,19 +65,30 @@ class Subgroup {
 		}
 
 		if (allSubgroupsDone) {
-			//next order
+			//next assignement
 			// return this.currentValue
 
-			const ordererRes = this.orderer.next();
-			if (ordererRes.done) {
-				return {done: true};
+			const assignementResponse = this.nextAssignment();
+
+			if (assignementResponse) {
+				//if all assignments has been made, goto next order.
+				const ordererRes = this.orderer.next();
+				if (this.topLayer) {
+					console.log("next order");
+
+				}
+				if (ordererRes.done) {
+					return {done: true};
+				}
+				// .split is temporary
+				this.uniqueOrder = ordererRes.value.split("");
+
+				this.createSubgroups();
+
+				// console.log(this.indexes);
+
 			}
-			// .split is temporary
-			this.uniqueOrder = ordererRes.value.split("");
 
-			this.createSubgroups();
-
-			console.log(this.indexes);
 
 			return {
 				done: false,
@@ -92,12 +103,63 @@ class Subgroup {
 
 	}
 
+	// reassign() {
+	// 	this.createSubgroups();
+	// }
+
 	nextAssignment() {
-		
+		let allindexesFinished = true;
+		for (let i = 0; i < this.indexes.length; i++) {
+			const cIndex = this.indexes[i];
+			const cIndexLast = cIndex.item.acceptingSubgroups.length - 1;
+
+			let allIndexesLast = true;
+
+			for (let j = cIndex.indexes.length - 1; j >= 0; j--){
+			 const cIndexIndex = cIndex.indexes[j];
+				if (cIndexIndex !== cIndexLast) {
+
+					const newIndexIndex = cIndexIndex + 1;
+					allIndexesLast = false;
+					// cIndex.indexes[j] = newIndexIndex;
+					for (var k = j; k < cIndex.indexes.length; k++) {
+						cIndex.indexes[k] = newIndexIndex;
+					}
+					break;
+				}
+			}
+
+			if (!allIndexesLast) {
+				// zero fill arrays before cIndex
+				for (let j = i - 1; j >= 0; j--){
+				 this.indexes[j].indexes.fill(0);
+				}
+				allindexesFinished = false
+				break;
+			}
+
+		}
+
+		//reassign
+
+		this.createSubgroups();
+		// console.log(this.indexes);
+
+		//return
+		if (allindexesFinished) {
+			return true;
+			// return {done: true};
+		} else {
+			return false;
+			// return {done: false};
+		}
 	}
 
 	createSubgroups() {
+		const that = this;
 		const remainingItems = this.uniqueOrder.slice();
+
+		this.subgroups = [];
 
 		for (let i = this.uniqueOrder.length - 1; i >= 0; i--){
 		 this.subgroups[i] = new Subgroup(undefined, remainingItems.slice());
@@ -105,18 +167,21 @@ class Subgroup {
 		 remainingItems.splice(remainingItems.length - 1,1);
 		}
 
-		const duplicates = this.uItems.duplicates;
-		for (let i = 0; i < duplicates.length; i++) {
-			const cDupe = duplicates[i];
-			const cValue = cDupe.value;
-			const cItem = new Item(cValue);
-			cItem.setAcceptingSubgroups(this.subgroups);
-			for (let j = 0; j < cDupe.dupes; j++) {
-				this.items.push(cItem);
-				cItem.acceptingSubgroups[0].assignItem(cValue);
+		this.items.forEach(item => item.setAcceptingSubgroups(that.subgroups))
+
+		for (let i = 0; i < this.indexes.length; i++) {
+			const cIndex = this.indexes[i];
+			const cItem = cIndex.item;
+
+			for (var j = 0; j < cIndex.indexes.length; j++) {
+				const cIndexIndex = cIndex.indexes[j];
+				//assign
+				cItem.acceptingSubgroups[cIndexIndex].assignItem(cItem.value);
+
 			}
 		}
 
+		// first iteration
 		this.subgroups.forEach(sub => sub.next());
 	}
 
@@ -136,38 +201,24 @@ class Subgroup {
 		this.subgroups = [];
 		this.items = [];
 
+		//create Items.
+
+		const duplicates = this.uItems.duplicates;
+		for (let i = 0; i < duplicates.length; i++) {
+			const cDupe = duplicates[i];
+			const cValue = cDupe.value;
+			const cItem = new Item(cValue);
+			cItem.setAcceptingSubgroups(this.subgroups);
+			this.indexes.push({
+				item: cItem,
+				indexes: new Array(cDupe.dupes).fill(0)
+			});
+			this.items.push(cItem);
+		}
+
 
 		this.createSubgroups();
 
-
-
-		// const duplicatesArray = this.str.getDuplicatesAsArray();
-		//
-		// for (let i = 0; i < duplicatesArray.length; i++) {
-		// 	const cValue = duplicatesArray[i];
-		// 	const cItem = new Item(cValue);
-		// 	cItem.setAcceptingSubgroups(this.subgroups);
-		// 	this.items.push(cItem);
-		// 	cItem.acceptingSubgroups[0].assignItem(cItem);
-		//
-		// }
-
-		// const returnedValues = [];
-		// const returnArray = [];
-		//
-		// // console.log("subs:", this.subgroups);
-		//
-		// for (let i = 0; i < this.subgroups.length; i++) {
-		// 	//initial iteration
-		// 	returnArray.push(this.uniqueOrder[i]);
-		// 	returnedValues[i] = this.subgroups[i].next();
-		// 	if (returnedValues[i].value) {
-		// 		returnArray.push(returnedValues[i].value);
-		//
-		// 	}
-		// }
-		// console.log(this.uniqueOrder);
-		// console.log(returnArray, returnedValues);
 
 
 		return {
