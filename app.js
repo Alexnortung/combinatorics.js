@@ -1,37 +1,41 @@
 const uniqueOrderer = require('./uniqueOrderer.js');
+const orderer = require("./orderer.js")
 
-const u = uniqueOrderer("001122");
+const u = uniqueOrderer("abcdefgh");
+const o = orderer("cdefgh")
 
 // const uniques = [];
 
+const startDate = Date.now();
+
 let isFinished = false;
-while (!isFinished) {
-	const res = u.next();
-	if (res.done) {
-		isFinished = true;
-		break;
+let iteration = 0;
+for (combination of u) {
+	iteration++;
+	if (iteration % 1000 == 0) {
+		console.log(iteration, `${Date.now() - startDate}ms`);
 	}
-	const val = res.value.join("")
-	console.log(val);
-	// if (uniques.indexOf(val) !== -1) {
-	// 	console.log(val, "already exists");
-	// } else {
-	// 	uniques.push(val);
-	// }
 }
 
-// for (cmb of u) {
-//   console.log(cmb);
+// while (!isFinished) {
+// 	iteration++;
+// 	const res = u.next();
+// 	if (res.done) {
+// 		isFinished = true;
+// 		break;
+// 	}
+// 	const val = res.value.join("");
+// 	if (iteration % 1000 == 0) {
+// 		console.log(iteration, `${Date.now() - startDate}ms`);
+// 	}
+// 	// console.log(val);
+// 	// if (uniques.indexOf(val) !== -1) {
+// 	// 	console.log(val, "already exists");
+// 	// } else {
+// 	// 	uniques.push(val);
+// 	// }
 // }
-// console.log(u.next().value);
-// console.log(u.next().value);
-// console.log(u.next().value);
-// console.log(u.next().value);
-// console.log(u.next().value);
-// console.log(u.next().value);
-// console.log(u.next().value);
-// console.log(u.next().value);
-// console.log(u.next().value);
-// console.log(u.next().value);
-// console.log(u.next().value);
-// console.log(u.next().value);
+
+console.log(`finished after ${Date.now() - startDate}ms`);
+
+// const startDate2 = Date.now();

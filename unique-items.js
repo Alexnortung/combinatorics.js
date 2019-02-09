@@ -64,9 +64,14 @@ class UniqueItems {
     this._uniques = arr.filter((item, index) => arr.indexOf(item) == index);
   }
 
+	get totalDuplicates() {
+		return this._totalDuplicates;
+	}
+
   _setDuplicates() {
     let arr = this._items;
     this.duplicatesArray = [];
+		this._totalDuplicates = 0;
 
 		const dupesArr = [];
 
@@ -82,6 +87,7 @@ class UniqueItems {
 			} else {
 				//count +1 in the dupesArr
 				dupesArr[cIndex].dupes++;
+				this._totalDuplicates++;
 			}
 
 		}

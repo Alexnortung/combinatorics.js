@@ -13,11 +13,16 @@ class Subgroup {
 		// this._currentValue = [];
 
 		this.firstIteration = true;
+		this.singleValued = false;
 	}
 
 	get currentValue() {
 		if (this.isEmpty() || this.firstIteration) {
 			return [];
+		} else if (this.singleValued) {
+			return this.itemsArray;
+		} else if (this.allItemsUnique) {
+			return this.uniqueOrder;
 		}
 
 		const returnArr = [];
@@ -39,14 +44,30 @@ class Subgroup {
 
 
 	next() {
+		const that = this;
 
-		if (this.isEmpty()) {
+		if (this.isEmpty() || (!this.firstIteration && this.singleValued)) {
 			return {done: true};
 		}
 
 		if (this.firstIteration) {
 			return this.firstIterationMethod();
 		}
+
+		if (this.allItemsUnique) {
+			const ordererRes = this.orderer.next();
+			if (ordererRes.done) {
+				return {done: true};
+			}
+
+			//.split is temporary
+			this.uniqueOrder = ordererRes.value.split("");
+
+			return {done: false, value: that.currentValue};
+
+		}
+
+
 
 
 		let allSubgroupsDone = true;
@@ -188,7 +209,14 @@ class Subgroup {
 	}
 
 	firstIterationMethod() {
+		const that = this;
 		this.firstIteration = false;
+		if (this.itemsArray.length == 1) {
+			this.singleValued = true;
+			return {done: false, value: that.currentValue};
+		}
+
+
 		this.indexes = [];
 		this.uItems = new UniqueItems(this.itemsArray);
 		// .join and .split is temporary
@@ -199,6 +227,13 @@ class Subgroup {
 		// console.log(this.uniqueOrder);
 		this.uniqueOrder = this.uniqueOrder.split("");
 		// console.log("uorder: ", this.uniqueOrder);
+
+		if (this.uItems.totalDuplicates == 0) {
+			//only create orderer, no subgroups.
+			this.allItemsUnique = true;
+			return {done: false, value: that.currentValue};
+		}
+
 		this.acceptingSubgroupsObj = {};
 		this.subgroups = [];
 		this.items = [];
