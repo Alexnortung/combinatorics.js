@@ -1,0 +1,23 @@
+{
+  "name": "combinatorics",
+  "version": "1.0.0",
+  "description": "Creates function generators that can create every combination of items. also unique cumbination",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alexnortung/combinatorics.js.git"
+  },
+  "keywords": [
+    "combinatorics",
+    "unique"
+  ],
+  "author": "Alexander Nortung",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Alexnortung/combinatorics.js/issues"
+  },
+  "homepage": "https://github.com/Alexnortung/combinatorics.js#readme"
+}
