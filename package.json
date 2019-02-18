@@ -1,5 +1,5 @@
 {
-  "name": "combinatorics",
+  "name": "unique-combinatorics",
   "version": "1.0.0",
   "description": "Creates function generators that can create every combination of items. also unique cumbination",
   "main": "app.js",
@@ -12,7 +12,8 @@
   },
   "keywords": [
     "combinatorics",
-    "unique"
+    "unique",
+    "combination"
   ],
   "author": "Alexander Nortung",
   "license": "MIT",
