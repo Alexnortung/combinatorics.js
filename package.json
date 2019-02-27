@@ -1,6 +1,6 @@
 {
   "name": "unique-combinatorics",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Creates function generators that can create every combination of items. also unique cumbination",
   "main": "app.js",
   "scripts": {
