@@ -33,7 +33,31 @@ class UniqueItems {
 		}
 
 		return arr;
-	}
+  }
+
+  getItemCount(item) {
+    if (!this.items.includes(item)) {
+      return 0;
+    }
+
+    return this.getItemDuplicates(item) + 1;
+  }
+  
+  getItemDuplicates(item) {
+
+    if (!this.items.includes(item)) {
+      return -1;
+    }
+
+    for (let i = 0; i < this._duplicates.length; i++) {
+      const obj = this._duplicates[i];
+      if (obj.value === item) {
+        return obj.dupes;
+      }
+    }
+
+    return 0;
+  }
 
   get items() {
     return this._items;
@@ -41,7 +65,7 @@ class UniqueItems {
 
   set items(inputArray) {
 		if (typeof inputArray === "undefined") {
-			inputArray = "undefined";
+			inputArray = [];
 		}
 		if (
 		typeof inputArray === "string" ||
