@@ -1,6 +1,6 @@
 const UniqueString = require('./unique-string.js');
 const UniqueItems = require('./Unique-items.js');
-const orderer = require("./orderer.js");
+const orderer = require("./orderer-items.js");
 const Item = require('./item.js');
 
 
@@ -60,8 +60,7 @@ class Subgroup {
 				return {done: true};
 			}
 
-			//.split is temporary
-			this.uniqueOrder = ordererRes.value.split("");
+			this.uniqueOrder = ordererRes.value;
 
 			return {done: false, value: that.currentValue};
 
@@ -101,8 +100,7 @@ class Subgroup {
 				if (ordererRes.done) {
 					return {done: true};
 				}
-				// .split is temporary
-				this.uniqueOrder = ordererRes.value.split("");
+				this.uniqueOrder = ordererRes.value;
 
 				this.createIndexes();
 
@@ -219,14 +217,9 @@ class Subgroup {
 
 		this.indexes = [];
 		this.uItems = new UniqueItems(this.itemsArray);
-		// .join and .split is temporary
-		const orderString = this.uItems.uniques.join("");
-		// console.log(orderString);
-		this.orderer = orderer(orderString);
+		const orderInput = this.uItems.uniques;
+		this.orderer = orderer(orderInput);
 		this.uniqueOrder = this.orderer.next().value;
-		// console.log(this.uniqueOrder);
-		this.uniqueOrder = this.uniqueOrder.split("");
-		// console.log("uorder: ", this.uniqueOrder);
 
 		if (this.uItems.totalDuplicates == 0) {
 			//only create orderer, no subgroups.
