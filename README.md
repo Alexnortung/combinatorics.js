@@ -3,7 +3,7 @@
 
 # Introduction
 
-With unique Combinatorics you will be able to generate combinations ny elements. Can generate the combinations so that all return values are unique.
+With unique Combinatorics you will be able to generate combinations of any elements. Can generate the combinations so that all return values are unique.
 
 example: you have the string "AAB" that you want all the combinations different combinations for, but you don't want "AAB" twice. Then it should look like the following.
 
