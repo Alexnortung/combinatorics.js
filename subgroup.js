@@ -1,5 +1,5 @@
 const UniqueString = require('./unique-string.js');
-const UniqueItems = require('./Unique-items.js');
+const UniqueItems = require('./unique-items.js');
 const orderer = require("./orderer-items.js");
 const Item = require('./item.js');
 

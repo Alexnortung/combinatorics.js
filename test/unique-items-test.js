@@ -1,4 +1,4 @@
-const UniqueItems = require('../Unique-items.js');
+const UniqueItems = require('../unique-items.js');
 const should = require('chai').should();
 
 
